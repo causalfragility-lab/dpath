@@ -1,0 +1,29 @@
+d 'DPATH': Decision-Path Construction and Infrastructure Auditing
+d
+d dpath implements the decision infrastructure paradigm (Hait, 2025)
+d for analysing AI-mediated institutional decision processes in
+d longitudinal panel data. It treats decision sequences as the
+d primary unit of analysis and provides five core subcommands:
+d build (construct path object), describe (path descriptors),
+d dri (Decision Reliability Index following Cronbach, 1951),
+d entropy (Shannon path entropy, Shannon 1948),
+d equity (group disparity diagnostics), and audit (full pipeline).
+d
+d KW: decision paths
+d KW: longitudinal
+d KW: panel data
+d KW: institutional AI
+d KW: reliability
+d KW: entropy
+d KW: equity
+d
+d Requires: Stata version 15
+d
+d Author: Subir Hait, Michigan State University
+d Support: haitsubi@msu.edu
+d
+d Distribution-Date: 20250309
+d
+f dpath.ado
+f dpath.sthlp
+f dpath_example.do
