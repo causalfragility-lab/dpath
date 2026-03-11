@@ -12,7 +12,7 @@
 
 ## Overview
 
-`dpath` is the Stata equivalent of the R package `decisionpaths` (Hait, 2025).
+`dpath` is the Stata equivalent of the R package `decisionpaths` (Hait, 2026).
 It implements the **Decision Infrastructure Paradigm**, which reconceptualises
 institutional AI systems not as static classifiers but as infrastructure that
 generates time-ordered binary decision sequences — the **decision path** — as
@@ -24,7 +24,7 @@ the primary empirical object.
 
 ### From GitHub (recommended)
 ```stata
-net install dpath, from("https://raw.githubusercontent.com/causalfragility-lab/dpath/main/ado/") replace
+net install dpath, from("https://raw.githubusercontent.com/causalfragility-lab/dpath/main/") replace
 ```
 
 ### Manual Installation
