@@ -1,5 +1,0 @@
-v 3
-d Packages written by Subir Hait
-d Michigan State University
-d haitsubi@msu.edu
-p dpath Decision-Path Construction and Infrastructure Auditing
