@@ -91,7 +91,7 @@ dpath audit ai_flag, id(studentid) time(wave) by(sesq) ref(Q1)
 
 ---
 
-## Infrastructure Typology (Hait, 2025)
+## Infrastructure Typology (Hait, 2026)
 
 | Type | Description | DRI | Entropy |
 |---|---|---|---|
