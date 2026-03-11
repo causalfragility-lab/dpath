@@ -1,80 +1,141 @@
-# dpath
+# dpath — Stata Package
+## Construct and Audit Longitudinal Decision Paths
 
-**Decision-Path Construction and Infrastructure Auditing for Stata**
+**Version:** 1.0.0  
+**Author:** Subir Hait, Michigan State University  
+**Email:** haitsubi@msu.edu  
+**ORCID:** 0009-0004-9871-9677  
+**GitHub:** https://github.com/causalfragility-lab/dpath  
+**Companion R package:** https://github.com/causalfragility-lab/decisionpaths
 
-`dpath` implements the **Decision Infrastructure Paradigm** (Hait, 2025) for analysing AI-mediated institutional decision processes in longitudinal panel data. It treats time-ordered decision sequences — not individual decisions — as the primary unit of analysis.
+---
+
+## Overview
+
+`dpath` is the Stata equivalent of the R package `decisionpaths` (Hait, 2025).
+It implements the **Decision Infrastructure Paradigm**, which reconceptualises
+institutional AI systems not as static classifiers but as infrastructure that
+generates time-ordered binary decision sequences — the **decision path** — as
+the primary empirical object.
+
+---
 
 ## Installation
 
-### From SSC (once published)
+### From GitHub (recommended)
 ```stata
-ssc install dpath
+net install dpath, from("https://raw.githubusercontent.com/causalfragility-lab/dpath/main/ado/") replace
 ```
 
-### From GitHub (development version)
+### Manual Installation
+Copy all `.ado` files to your Stata personal ado directory:
 ```stata
-net install dpath, from("https://raw.githubusercontent.com/causalfragility-lab/dpath/main/")
+. adopath
+```
+Then place all `.ado` files and `dpath.sthlp` in that directory.
+
+---
+
+## Core Functions
+
+| Command | Description |
+|---|---|
+| `dpath build` | Build decision-path variables from panel data |
+| `dpath describe` | Per-unit path descriptors: dosage, switching, onset, duration |
+| `dpath dri` | Decision Reliability Index (Cronbach, 1951 analogy) |
+| `dpath entropy` | Shannon path entropy (Shannon, 1948) |
+| `dpath equity` | Group equity diagnostics via SMDs |
+| `dpath audit` | Full five-step integrated audit |
+
+---
+
+## Quick Start
+
+```stata
+* Setup panel
+xtset studentid wave
+
+* Step 1: Build decision-path variables
+dpath build ai_flag, id(studentid) time(wave) group(sesq)
+
+* Step 2: Descriptors
+dpath describe, id(studentid) time(wave) by(sesq)
+
+* Step 3: DRI
+dpath dri, id(studentid) time(wave) by(sesq)
+
+* Step 4: Entropy
+dpath entropy, id(studentid) time(wave) by(sesq)
+
+* Step 5: Equity
+dpath equity, id(studentid) time(wave) by(sesq) ref(Q1)
+
+* Or run everything at once:
+dpath audit ai_flag, id(studentid) time(wave) by(sesq) ref(Q1)
 ```
 
-## Core Workflow
+---
 
-```stata
-* Step 1: Build decision-path object
-dpath build ai_flag, id(studentid) time(wave) outcome(math) group(sesq)
+## New Variables Created by `dpath build`
 
-* Step 2: Path descriptors
-dpath describe, by(sesq)
+| Variable | Description |
+|---|---|
+| `_dp_path_str` | Decision path string e.g. `0-1-1-0` |
+| `_dp_dosage` | Proportion of waves with decision = 1 |
+| `_dp_switch` | Switching rate |
+| `_dp_onset` | First wave with decision = 1 |
+| `_dp_duration` | Count of waves with decision = 1 |
+| `_dp_longest` | Longest consecutive run of decision = 1 |
+| `_dp_n_periods` | Number of observed waves |
+| `_dp_treat_count` | Total treated waves |
 
-* Step 3: Decision Reliability Index (Cronbach, 1951)
-dpath dri, by(sesq)
+---
 
-* Step 4: Shannon path entropy (Shannon, 1948)
-dpath entropy, top(10)
+## Infrastructure Typology (Hait, 2025)
 
-* Step 5: Equity diagnostics
-dpath equity, by(sesq) ref(Q4)
+| Type | Description | DRI | Entropy |
+|---|---|---|---|
+| I — Static | Decision fixed at baseline | ~1.0 | Very low |
+| II — Periodic | Recalibrated every N waves | ~0.70–0.95 | Medium |
+| III — Continuous | Updates every wave | ~0.40–0.70 | High |
+| IV — Human-in-loop | Algorithmic + human override | ~0.30–0.50 | High |
 
-* Or run all steps at once
-dpath audit, by(sesq)
+---
+
+## Stored Results (`r()`)
+
+After `dpath audit`:
+
+```
+r(n_units)            — number of units
+r(n_waves)            — maximum waves
+r(balanced)           — 1 if balanced panel
+r(mean_dosage)        — mean dosage
+r(mean_switch)        — mean switching rate
+r(DRI)                — Decision Reliability Index
+r(entropy)            — Shannon H (bits)
+r(normalized_entropy) — H* (normalized)
+r(n_unique_paths)     — unique path count
 ```
 
-## Infrastructure Types
-
-| Type | Description | Expected DRI |
-|------|-------------|-------------|
-| I — Static | Decision fixed at baseline | ~1.0 |
-| II — Periodic | Recalibrated every N waves | ~0.6–0.8 |
-| III — Continuous | Updates every wave | ~0.4–0.6 |
-| IV — Human-in-loop | Algorithmic + human override | ~0.3–0.5 |
-
-## Subcommands
-
-| Subcommand | Description |
-|-----------|-------------|
-| `dpath build` | Construct decision-path object from panel data |
-| `dpath describe` | Dosage, switching rate, onset, duration |
-| `dpath dri` | Decision Reliability Index |
-| `dpath entropy` | Shannon path entropy |
-| `dpath equity` | Group equity diagnostics via SMD |
-| `dpath audit` | Full five-step audit pipeline |
-
-## Companion R Package
-
-The companion R package `decisionpaths` is available at:
-[https://github.com/causalfragility-lab/decisionpaths](https://github.com/causalfragility-lab/decisionpaths)
+---
 
 ## References
 
-- Cronbach, L. J. (1951). Coefficient alpha and the internal structure of tests. *Psychometrika*, 16(3), 297–334. https://doi.org/10.1007/BF02310555
-- Hait, S. (2025). Artificial intelligence as decision infrastructure: Rethinking institutional decision processes. Michigan State University.
-- Shannon, C. E. (1948). A mathematical theory of communication. *Bell System Technical Journal*, 27(3), 379–423. https://doi.org/10.1002/j.1538-7305.1948.tb01338.x
+Cronbach, L. J. (1951). Coefficient alpha and the internal structure of tests. *Psychometrika*, 16(3), 297–334.
 
-## Author
+Hait, S. (2026). Artificial intelligence as decision infrastructure: Rethinking institutional decision processes. Michigan State University. https://github.com/causalfragility-lab/decisionpaths
 
-Subir Hait, Michigan State University  
-haitsubi@msu.edu  
-ORCID: [0009-0004-9871-9677](https://orcid.org/0009-0004-9871-9677)
+Nunnally, J. C. (1978). *Psychometric theory* (2nd ed.). McGraw-Hill.
+
+Shannon, C. E. (1948). A mathematical theory of communication. *Bell System Technical Journal*, 27(3), 379–423.
+
+---
 
 ## Citation
 
-Hait, S. (2025). *dpath: Decision-path construction and infrastructure auditing for Stata*. Version 0.1.0. https://github.com/causalfragility-lab/dpath
+```
+Hait, S. (2026). dpath: Construct and Audit Longitudinal Decision Paths.
+Stata package version 1.0.0.
+https://github.com/causalfragility-lab/dpath
+```
